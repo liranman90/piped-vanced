@@ -192,7 +192,7 @@
         </div>
         
         <h1>YouTube Premium</h1>
-        <p class="subtitle">ללא פרסומות • הרצה ברקע • מסך מלא</p>
+        <p class="subtitle">פתרון מלא - ללא about:blank</p>
         
         <div class="features">
             <div class="feature">
@@ -209,7 +209,7 @@
             </div>
             <div class="feature">
                 <div class="feature-icon">⚡</div>
-                <div class="feature-text">מהיר ויציב</div>
+                <div class="feature-text">פתרון יציב</div>
             </div>
         </div>
         
@@ -217,7 +217,7 @@
             <div class="progress-bar"></div>
         </div>
         
-        <div class="status" id="statusText">מתחיל טעינה...</div>
+        <div class="status" id="statusText">מאתחל מערכת...</div>
         
         <div class="instructions" id="instructions">
             <h3>הוראות להתקנה מלאה:</h3>
@@ -231,115 +231,36 @@
     </div>
 
     <script>
-        // רשימת שרתי פרוקסי פעילים לחסימת פרסומות
-        const PROXY_SERVERS = [
-            "https://vid.puffyan.us",
-            "https://inv.riverside.rocks",
-            "https://invidious.snopyta.org",
-            "https://yewtu.be"
-        ];
-        
-        // מציאת שרת זמין
-        async function findWorkingProxy() {
-            for (const proxy of PROXY_SERVERS) {
-                try {
-                    const response = await fetch(`${proxy}/healthcheck`, {
-                        method: 'HEAD',
-                        mode: 'no-cors',
-                        cache: 'no-store'
-                    });
-                    return proxy;
-                } catch (e) {
-                    continue;
-                }
-            }
-            return null;
-        }
-        
-        // הפעלת הרצה ברקע
-        function enableBackgroundPlay() {
-            const videos = document.querySelectorAll('video');
-            videos.forEach(video => {
-                // הפעלת Picture-in-Picture
-                video.requestPictureInPicture().catch(() => {
-                    // גיבוי להרצה ברקע
-                    video.setAttribute('playsinline', '');
-                    video.setAttribute('webkit-playsinline', '');
-                    video.play();
-                });
-            });
-        }
-        
-        // פתיחת YouTube
+        // פתרון קבוע לבעיית about:blank
         async function openYouTube() {
             const statusEl = document.getElementById('statusText');
             
             try {
-                // מציאת שרת פרוקסי זמין
-                statusEl.textContent = "מחפש שרת ללא פרסומות...";
-                const proxy = await findWorkingProxy();
+                statusEl.textContent = "פותח גרסה ללא פרסומות...";
                 
-                if (!proxy) {
-                    statusEl.textContent = "משתמש ב-YouTube רגיל";
-                    window.location.href = "https://www.youtube.com";
-                    return;
-                }
+                // שרת פרוקסי יציב עם חסימת פרסומות
+                const proxyUrl = "https://yewtu.be";
                 
-                statusEl.textContent = "פותח יוטיוב ללא פרסומות...";
+                // בדיקה שהשרת זמין
+                const isAvailable = await checkProxyAvailability(proxyUrl);
+                
+                const targetUrl = isAvailable ? proxyUrl : "https://www.youtube.com";
                 
                 // אם אנחנו ב-PWA, פתח ישירות
                 if (window.matchMedia('(display-mode: standalone)').matches) {
-                    window.location.href = `${proxy}`;
+                    window.location.href = targetUrl;
                 } else {
-                    // פתיחה בחלון חדש
-                    const newWindow = window.open("", "_blank");
+                    // יצירת קישור שקוף להפעלה
+                    const link = document.createElement('a');
+                    link.href = targetUrl;
+                    link.target = '_blank';
+                    link.style.display = 'none';
+                    document.body.appendChild(link);
+                    link.click();
                     
-                    // יצירת דף חדש עם החסימות
-                    newWindow.document.write(`
-                        <!DOCTYPE html>
-                        <html>
-                        <head>
-                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                            <meta name="apple-mobile-web-app-capable" content="yes">
-                            <meta name="apple-mobile-web-app-status-bar-style" content="black">
-                            <title>YouTube Premium</title>
-                            <style>
-                                body, html {
-                                    margin: 0;
-                                    padding: 0;
-                                    height: 100%;
-                                    overflow: hidden;
-                                    background: #000;
-                                }
-                                iframe {
-                                    position: fixed;
-                                    top: 0;
-                                    left: 0;
-                                    width: 100%;
-                                    height: 100%;
-                                    border: none;
-                                }
-                            </style>
-                        </head>
-                        <body>
-                            <iframe src="${proxy}" allowfullscreen></iframe>
-                            <script>
-                                // הפעלת הרצה ברקע
-                                setTimeout(() => {
-                                    const videos = document.querySelectorAll('video');
-                                    videos.forEach(video => {
-                                        video.requestPictureInPicture().catch(() => {
-                                            video.setAttribute('playsinline', '');
-                                            video.setAttribute('webkit-playsinline', '');
-                                            video.play();
-                                        });
-                                    });
-                                }, 3000);
-                            <\/script>
-                        </body>
-                        </html>
-                    `);
-                    newWindow.document.close();
+                    // הצג הוראות
+                    statusEl.textContent = "פתיחת יוטיוב בחלון חדש...";
+                    document.getElementById('instructions').style.display = 'block';
                 }
                 
             } catch (e) {
@@ -348,8 +269,34 @@
             }
         }
         
+        // בדיקת זמינות שרת
+        async function checkProxyAvailability(url) {
+            try {
+                const response = await fetch(url, {
+                    method: 'HEAD',
+                    mode: 'no-cors',
+                    cache: 'no-store'
+                });
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+        
+        // הפעלת הרצה ברקע
+        function enableBackgroundPlay() {
+            const videos = document.querySelectorAll('video');
+            videos.forEach(video => {
+                video.requestPictureInPicture().catch(() => {
+                    video.setAttribute('playsinline', '');
+                    video.setAttribute('webkit-playsinline', '');
+                    video.play();
+                });
+            });
+        }
+        
         // אתחול המערכת
-        window.onload = async function() {
+        window.onload = function() {
             // הצג הוראות אם לא במצב PWA
             if (!window.matchMedia('(display-mode: standalone)').matches) {
                 document.getElementById('instructions').style.display = 'block';
