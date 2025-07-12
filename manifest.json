@@ -1,0 +1,15 @@
+{
+  "name": "YouTube Premium Web",
+  "short_name": "YouTube",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#181818",
+  "theme_color": "#ff0000",
+  "icons": [
+    {
+      "src": "https://www.youtube.com/s/desktop/1bfa1e55/img/favicon_144x144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    }
+  ]
+}
