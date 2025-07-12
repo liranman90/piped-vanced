@@ -2,10 +2,10 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <title>YouTube Full</title>
+    <title>YouTube Premium</title>
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23f00'/><path d='M70 50L40 65V35z' fill='white'/></svg>">
     <style>
         * {
@@ -22,6 +22,7 @@
             background: #000;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             color: white;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
         }
         
         #container {
@@ -38,7 +39,7 @@
         .logo {
             width: 100px;
             height: 100px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             background: #ff0000;
             border-radius: 22px;
             display: flex;
@@ -50,7 +51,7 @@
         
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+            50% { transform: scale(1.05); box-shadow: 0 0 40px rgba(255, 0, 0, 0.7); }
         }
         
         .logo svg {
@@ -73,6 +74,32 @@
             color: #aaa;
             font-size: 1.1rem;
             margin-bottom: 30px;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+            max-width: 400px;
+            width: 100%;
+        }
+        
+        .feature {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .feature-text {
+            font-size: 0.9rem;
+            color: #ddd;
         }
         
         .progress-container {
@@ -103,18 +130,37 @@
             margin-top: 20px;
         }
         
-        .hidden {
+        .instructions {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
             display: none;
         }
         
-        /* הסתרת כל אלמנטי הדפדפן במצב PWA */
+        .instructions h3 {
+            color: #ff5a5a;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .instructions ol {
+            text-align: right;
+            padding-right: 20px;
+            list-style-position: inside;
+        }
+        
+        .instructions li {
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        
+        /* הסתרת סרגלי הניווט במצב PWA */
         @media (display-mode: standalone) {
             body {
-                padding-top: env(safe-area-inset-top);
-                padding-bottom: env(safe-area-inset-bottom);
-            }
-            
-            #container {
                 padding-top: env(safe-area-inset-top);
                 padding-bottom: env(safe-area-inset-bottom);
             }
@@ -130,6 +176,10 @@
                 background: #000;
                 z-index: 1000;
             }
+            
+            .instructions {
+                display: none !important;
+            }
         }
     </style>
 </head>
@@ -141,78 +191,172 @@
             </svg>
         </div>
         
-        <h1>YouTube Full</h1>
-        <p class="subtitle">פתיחת מסך מלא ללא סרגלים</p>
+        <h1>YouTube Premium</h1>
+        <p class="subtitle">ללא פרסומות • הרצה ברקע • מסך מלא</p>
+        
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">🚫</div>
+                <div class="feature-text">ללא פרסומות</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🎧</div>
+                <div class="feature-text">הרצה ברקע</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📱</div>
+                <div class="feature-text">מסך מלא</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">⚡</div>
+                <div class="feature-text">מהיר ויציב</div>
+            </div>
+        </div>
         
         <div class="progress-container">
             <div class="progress-bar"></div>
         </div>
         
         <div class="status" id="statusText">מתחיל טעינה...</div>
+        
+        <div class="instructions" id="instructions">
+            <h3>הוראות להתקנה מלאה:</h3>
+            <ol>
+                <li>פתח את יוטיוב בלחיצה על הקישור</li>
+                <li>לחץ על סמל השיתוף (חץ למעלה)</li>
+                <li>בחר "הוסף למסך הבית"</li>
+                <li>בפעם הבאה - פתח ישירות מהאפליקציה במסך הבית!</li>
+            </ol>
+        </div>
     </div>
 
     <script>
-        // פונקציה לפתיחת יוטיוב במסך מלא
-        function openYouTubeFullScreen() {
-            // אם אנחנו במצב PWA, פתח ישירות
-            if (window.matchMedia('(display-mode: standalone)').matches) {
+        // רשימת שרתי פרוקסי פעילים לחסימת פרסומות
+        const PROXY_SERVERS = [
+            "https://vid.puffyan.us",
+            "https://inv.riverside.rocks",
+            "https://invidious.snopyta.org",
+            "https://yewtu.be"
+        ];
+        
+        // מציאת שרת זמין
+        async function findWorkingProxy() {
+            for (const proxy of PROXY_SERVERS) {
+                try {
+                    const response = await fetch(`${proxy}/healthcheck`, {
+                        method: 'HEAD',
+                        mode: 'no-cors',
+                        cache: 'no-store'
+                    });
+                    return proxy;
+                } catch (e) {
+                    continue;
+                }
+            }
+            return null;
+        }
+        
+        // הפעלת הרצה ברקע
+        function enableBackgroundPlay() {
+            const videos = document.querySelectorAll('video');
+            videos.forEach(video => {
+                // הפעלת Picture-in-Picture
+                video.requestPictureInPicture().catch(() => {
+                    // גיבוי להרצה ברקע
+                    video.setAttribute('playsinline', '');
+                    video.setAttribute('webkit-playsinline', '');
+                    video.play();
+                });
+            });
+        }
+        
+        // פתיחת YouTube
+        async function openYouTube() {
+            const statusEl = document.getElementById('statusText');
+            
+            try {
+                // מציאת שרת פרוקסי זמין
+                statusEl.textContent = "מחפש שרת ללא פרסומות...";
+                const proxy = await findWorkingProxy();
+                
+                if (!proxy) {
+                    statusEl.textContent = "משתמש ב-YouTube רגיל";
+                    window.location.href = "https://www.youtube.com";
+                    return;
+                }
+                
+                statusEl.textContent = "פותח יוטיוב ללא פרסומות...";
+                
+                // אם אנחנו ב-PWA, פתח ישירות
+                if (window.matchMedia('(display-mode: standalone)').matches) {
+                    window.location.href = `${proxy}`;
+                } else {
+                    // פתיחה בחלון חדש
+                    const newWindow = window.open("", "_blank");
+                    
+                    // יצירת דף חדש עם החסימות
+                    newWindow.document.write(`
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                            <meta name="apple-mobile-web-app-capable" content="yes">
+                            <meta name="apple-mobile-web-app-status-bar-style" content="black">
+                            <title>YouTube Premium</title>
+                            <style>
+                                body, html {
+                                    margin: 0;
+                                    padding: 0;
+                                    height: 100%;
+                                    overflow: hidden;
+                                    background: #000;
+                                }
+                                iframe {
+                                    position: fixed;
+                                    top: 0;
+                                    left: 0;
+                                    width: 100%;
+                                    height: 100%;
+                                    border: none;
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            <iframe src="${proxy}" allowfullscreen></iframe>
+                            <script>
+                                // הפעלת הרצה ברקע
+                                setTimeout(() => {
+                                    const videos = document.querySelectorAll('video');
+                                    videos.forEach(video => {
+                                        video.requestPictureInPicture().catch(() => {
+                                            video.setAttribute('playsinline', '');
+                                            video.setAttribute('webkit-playsinline', '');
+                                            video.play();
+                                        });
+                                    });
+                                }, 3000);
+                            <\/script>
+                        </body>
+                        </html>
+                    `);
+                    newWindow.document.close();
+                }
+                
+            } catch (e) {
+                statusEl.textContent = "פותח גרסה רגילה...";
                 window.location.href = "https://www.youtube.com";
-            } else {
-                // פתיחה בחלון חדש עם מניפולציית DOM
-                const newWindow = window.open("", "_blank");
-                
-                // יצירת דף חדש ללא סרגלים
-                newWindow.document.write(`
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <meta name="apple-mobile-web-app-capable" content="yes">
-                        <meta name="apple-mobile-web-app-status-bar-style" content="black">
-                        <title>YouTube Full</title>
-                        <style>
-                            body, html {
-                                margin: 0;
-                                padding: 0;
-                                height: 100%;
-                                overflow: hidden;
-                                background: #000;
-                            }
-                            iframe {
-                                position: fixed;
-                                top: 0;
-                                left: 0;
-                                width: 100%;
-                                height: 100%;
-                                border: none;
-                            }
-                        </style>
-                    </head>
-                    <body>
-                        <iframe src="https://www.youtube.com" allowfullscreen></iframe>
-                    </body>
-                    </html>
-                `);
-                
-                newWindow.document.close();
             }
         }
         
         // אתחול המערכת
-        window.onload = function() {
-            document.getElementById('statusText').textContent = "מכין מסך מלא...";
+        window.onload = async function() {
+            // הצג הוראות אם לא במצב PWA
+            if (!window.matchMedia('(display-mode: standalone)').matches) {
+                document.getElementById('instructions').style.display = 'block';
+            }
             
-            setTimeout(() => {
-                document.getElementById('statusText').textContent = "פותח יוטיוב...";
-                openYouTubeFullScreen();
-                
-                // הוראות להתקנה אם לא במצב PWA
-                if (!window.matchMedia('(display-mode: standalone)').matches) {
-                    setTimeout(() => {
-                        document.getElementById('statusText').innerHTML = 
-                            "להתקנה קבועה:<br>1. פתח את יוטיוב<br>2. לחץ על Share<br>3. בחר 'הוסף למסך הבית'";
-                    }, 2000);
-                }
-            }, 2000);
+            // הפעל את YouTube
+            setTimeout(openYouTube, 2000);
         };
     </script>
 </body>
