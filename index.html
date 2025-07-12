@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <title>YouTube Premium</title>
+    <title>YouTube Pro</title>
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23f00'/><path d='M70 50L40 65V35z' fill='white'/></svg>">
     <style>
         * {
@@ -19,143 +19,192 @@
         body, html {
             height: 100%;
             overflow: hidden;
-            background: #000;
+            background: #0f0f0f;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             color: white;
             padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
         }
         
-        #container {
+        #app {
             height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+        }
+        
+        /* סרגל ניווט */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            text-align: center;
-            padding: 20px;
-            position: relative;
+            padding: 15px;
+            background: #202020;
+            border-bottom: 1px solid #303030;
         }
         
         .logo {
-            width: 100px;
-            height: 100px;
-            margin-bottom: 25px;
-            background: #ff0000;
-            border-radius: 22px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); box-shadow: 0 0 40px rgba(255, 0, 0, 0.7); }
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff;
         }
         
         .logo svg {
-            width: 60px;
-            height: 60px;
-            fill: white;
+            width: 30px;
+            height: 30px;
+            margin-left: 10px;
+            fill: #ff0000;
         }
         
-        h1 {
-            font-size: 2.2rem;
-            margin-bottom: 10px;
-            font-weight: 700;
-            background: linear-gradient(45deg, #ff0000, #ff5a5a);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        .search-bar {
+            flex-grow: 1;
+            margin: 0 15px;
+            position: relative;
         }
         
-        .subtitle {
-            color: #aaa;
-            font-size: 1.1rem;
-            margin-bottom: 30px;
+        .search-bar input {
+            width: 100%;
+            padding: 10px 15px;
+            background: #121212;
+            border: 1px solid #303030;
+            border-radius: 24px;
+            color: white;
+            font-size: 16px;
         }
         
-        .features {
+        .nav-icons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .icon-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        /* אזור תוכן */
+        .content {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 15px;
+        }
+        
+        .video-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 15px;
-            margin-bottom: 30px;
-            max-width: 400px;
-            width: 100%;
         }
         
-        .feature {
-            background: rgba(255, 255, 255, 0.1);
+        .video-card {
+            background: #202020;
             border-radius: 12px;
-            padding: 15px;
-            text-align: center;
-        }
-        
-        .feature-icon {
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
-        
-        .feature-text {
-            font-size: 0.9rem;
-            color: #ddd;
-        }
-        
-        .progress-container {
-            width: 100%;
-            max-width: 300px;
-            height: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
             overflow: hidden;
-            margin: 20px auto;
+            cursor: pointer;
         }
         
-        .progress-bar {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, #ff0000, #ff5a5a);
-            border-radius: 4px;
-            animation: progress 2s forwards;
-        }
-        
-        @keyframes progress {
-            to { width: 100%; }
-        }
-        
-        .status {
-            color: #ccc;
-            font-size: 1rem;
-            margin-top: 20px;
-        }
-        
-        .instructions {
-            margin-top: 30px;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            text-align: center;
-            max-width: 500px;
+        .thumbnail {
             width: 100%;
+            aspect-ratio: 16/9;
+            background: #303030;
+            position: relative;
+        }
+        
+        .thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .duration {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background: rgba(0,0,0,0.8);
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        
+        .video-info {
+            padding: 10px;
+        }
+        
+        .video-title {
+            font-size: 14px;
+            margin-bottom: 5px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .channel-name {
+            font-size: 12px;
+            color: #aaa;
+        }
+        
+        /* נגן וידאו */
+        #player-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 100;
             display: none;
         }
         
-        .instructions h3 {
-            color: #ff5a5a;
-            margin-bottom: 15px;
-            font-size: 1.2rem;
+        #player {
+            width: 100%;
+            height: 100%;
         }
         
-        .instructions ol {
-            text-align: right;
-            padding-right: 20px;
-            list-style-position: inside;
+        .player-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
-        .instructions li {
-            margin-bottom: 10px;
-            line-height: 1.5;
+        .player-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        
+        .close-player {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0,0,0,0.5);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 101;
         }
         
         /* הסתרת סרגלי הניווט במצב PWA */
@@ -176,135 +225,153 @@
                 background: #000;
                 z-index: 1000;
             }
-            
-            .instructions {
-                display: none !important;
-            }
         }
     </style>
 </head>
 <body>
-    <div id="container">
-        <div class="logo">
-            <svg viewBox="0 0 24 24">
-                <path d="M23.498 6.186a2.998 2.998 0 0 0-2.112-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.386.505A2.998 2.998 0 0 0 .502 6.186C0 8.067 0 12 0 12s0 3.933.502 5.814a2.998 2.998 0 0 0 2.112 2.136c1.881.505 9.386.505 9.386.505s7.505 0 9.386-.505a2.998 2.998 0 0 0 2.112-2.136C24 15.933 24 12 24 12s0-3.933-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-            </svg>
-        </div>
-        
-        <h1>YouTube Premium</h1>
-        <p class="subtitle">פתרון מלא - ללא about:blank</p>
-        
-        <div class="features">
-            <div class="feature">
-                <div class="feature-icon">🚫</div>
-                <div class="feature-text">ללא פרסומות</div>
+    <div id="app">
+        <!-- סרגל ניווט -->
+        <div class="navbar">
+            <div class="logo">
+                YouTube Pro
+                <svg viewBox="0 0 24 24">
+                    <path d="M23.498 6.186a2.998 2.998 0 0 0-2.112-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.386.505A2.998 2.998 0 0 0 .502 6.186C0 8.067 0 12 0 12s0 3.933.502 5.814a2.998 2.998 0 0 0 2.112 2.136c1.881.505 9.386.505 9.386.505s7.505 0 9.386-.505a2.998 2.998 0 0 0 2.112-2.136C24 15.933 24 12 24 12s0-3.933-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                </svg>
             </div>
-            <div class="feature">
-                <div class="feature-icon">🎧</div>
-                <div class="feature-text">הרצה ברקע</div>
+            
+            <div class="search-bar">
+                <input type="text" placeholder="חפש סרטונים...">
             </div>
-            <div class="feature">
-                <div class="feature-icon">📱</div>
-                <div class="feature-text">מסך מלא</div>
-            </div>
-            <div class="feature">
-                <div class="feature-icon">⚡</div>
-                <div class="feature-text">פתרון יציב</div>
+            
+            <div class="nav-icons">
+                <button class="icon-btn">🔔</button>
+                <button class="icon-btn">⭕</button>
             </div>
         </div>
         
-        <div class="progress-container">
-            <div class="progress-bar"></div>
+        <!-- תוכן ראשי -->
+        <div class="content">
+            <div class="video-grid" id="video-grid">
+                <!-- הסרטונים יטענו כאן -->
+            </div>
         </div>
         
-        <div class="status" id="statusText">מאתחל מערכת...</div>
-        
-        <div class="instructions" id="instructions">
-            <h3>הוראות להתקנה מלאה:</h3>
-            <ol>
-                <li>פתח את יוטיוב בלחיצה על הקישור</li>
-                <li>לחץ על סמל השיתוף (חץ למעלה)</li>
-                <li>בחר "הוסף למסך הבית"</li>
-                <li>בפעם הבאה - פתח ישירות מהאפליקציה במסך הבית!</li>
-            </ol>
+        <!-- נגן וידאו -->
+        <div id="player-container">
+            <button class="close-player" id="close-player">✕</button>
+            <iframe id="player" allowfullscreen></iframe>
+            <div class="player-controls">
+                <button class="player-btn" id="pip-btn">📺</button>
+                <button class="player-btn" id="play-btn">▶</button>
+                <button class="player-btn" id="bg-play-btn">🎧</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // פתרון קבוע לבעיית about:blank
-        async function openYouTube() {
-            const statusEl = document.getElementById('statusText');
-            
-            try {
-                statusEl.textContent = "פותח גרסה ללא פרסומות...";
-                
-                // שרת פרוקסי יציב עם חסימת פרסומות
-                const proxyUrl = "https://yewtu.be";
-                
-                // בדיקה שהשרת זמין
-                const isAvailable = await checkProxyAvailability(proxyUrl);
-                
-                const targetUrl = isAvailable ? proxyUrl : "https://www.youtube.com";
-                
-                // אם אנחנו ב-PWA, פתח ישירות
-                if (window.matchMedia('(display-mode: standalone)').matches) {
-                    window.location.href = targetUrl;
-                } else {
-                    // יצירת קישור שקוף להפעלה
-                    const link = document.createElement('a');
-                    link.href = targetUrl;
-                    link.target = '_blank';
-                    link.style.display = 'none';
-                    document.body.appendChild(link);
-                    link.click();
-                    
-                    // הצג הוראות
-                    statusEl.textContent = "פתיחת יוטיוב בחלון חדש...";
-                    document.getElementById('instructions').style.display = 'block';
-                }
-                
-            } catch (e) {
-                statusEl.textContent = "פותח גרסה רגילה...";
-                window.location.href = "https://www.youtube.com";
-            }
+        // הגדרות האפליקציה
+        const config = {
+            apiServer: "https://ytapi.vercel.app", // שרת פרוקסי לחסימת פרסומות
+            useProxy: true,
+            enableBackgroundPlay: true
+        };
+        
+        // אלמנטים DOM
+        const videoGrid = document.getElementById('video-grid');
+        const playerContainer = document.getElementById('player-container');
+        const player = document.getElementById('player');
+        const closePlayer = document.getElementById('close-player');
+        const pipBtn = document.getElementById('pip-btn');
+        const bgPlayBtn = document.getElementById('bg-play-btn');
+        
+        // סימולציית מסד נתונים של סרטונים
+        const videos = [
+            { id: "dQw4w9WgXcQ", title: "Rick Astley - Never Gonna Give You Up", channel: "Rick Astley", duration: "3:32" },
+            { id: "kfVsfOSbJY0", title: "Bohemian Rhapsody", channel: "Queen Official", duration: "5:55" },
+            { id: "OPf0YbXqDm0", title: "Mark Ronson - Uptown Funk ft. Bruno Mars", channel: "Mark Ronson", duration: "4:30" },
+            { id: "09R8_2nJtjg", title: "Maroon 5 - Sugar", channel: "Maroon5", duration: "3:55" },
+            { id: "kJQP7kiw5Fk", title: "Luis Fonsi - Despacito ft. Daddy Yankee", channel: "LuisFonsiVEVO", duration: "4:41" },
+            { id: "CevxZvSJLk8", title: "Katy Perry - Roar", channel: "KatyPerryVEVO", duration: "3:42" }
+        ];
+        
+        // טעינת סרטונים לדף
+        function loadVideos() {
+            videoGrid.innerHTML = '';
+            videos.forEach(video => {
+                const videoCard = document.createElement('div');
+                videoCard.className = 'video-card';
+                videoCard.innerHTML = `
+                    <div class="thumbnail">
+                        <img src="https://i.ytimg.com/vi/${video.id}/hqdefault.jpg" alt="${video.title}">
+                        <div class="duration">${video.duration}</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">${video.title}</div>
+                        <div class="channel-name">${video.channel}</div>
+                    </div>
+                `;
+                videoCard.addEventListener('click', () => playVideo(video.id));
+                videoGrid.appendChild(videoCard);
+            });
         }
         
-        // בדיקת זמינות שרת
-        async function checkProxyAvailability(url) {
-            try {
-                const response = await fetch(url, {
-                    method: 'HEAD',
-                    mode: 'no-cors',
-                    cache: 'no-store'
-                });
-                return true;
-            } catch (e) {
-                return false;
-            }
+        // הפעלת נגן וידאו
+        function playVideo(videoId) {
+            const videoUrl = config.useProxy 
+                ? `${config.apiServer}/embed/${videoId}?autoplay=1`
+                : `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+            
+            player.src = videoUrl;
+            playerContainer.style.display = 'block';
+            document.body.style.overflow = 'hidden';
         }
         
         // הפעלת הרצה ברקע
         function enableBackgroundPlay() {
-            const videos = document.querySelectorAll('video');
-            videos.forEach(video => {
-                video.requestPictureInPicture().catch(() => {
+            const video = player.contentDocument.querySelector('video');
+            if (video) {
+                try {
+                    if (document.pictureInPictureElement) {
+                        document.exitPictureInPicture();
+                    } else {
+                        video.requestPictureInPicture();
+                    }
+                } catch (e) {
+                    // גיבוי להרצה ברקע
                     video.setAttribute('playsinline', '');
                     video.setAttribute('webkit-playsinline', '');
                     video.play();
-                });
-            });
+                    alert("הסרטון ממשיך לנגן ברקע. לחץ 'הרץ ברקע' שוב כדי לעצור.");
+                }
+            }
         }
         
-        // אתחול המערכת
+        // סגירת הנגן
+        function closeVideoPlayer() {
+            playerContainer.style.display = 'none';
+            player.src = '';
+            document.body.style.overflow = 'auto';
+        }
+        
+        // אירועים
+        closePlayer.addEventListener('click', closeVideoPlayer);
+        pipBtn.addEventListener('click', () => {
+            const video = player.contentDocument.querySelector('video');
+            if (video) video.requestPictureInPicture();
+        });
+        bgPlayBtn.addEventListener('click', enableBackgroundPlay);
+        
+        // אתחול האפליקציה
         window.onload = function() {
-            // הצג הוראות אם לא במצב PWA
-            if (!window.matchMedia('(display-mode: standalone)').matches) {
-                document.getElementById('instructions').style.display = 'block';
-            }
+            loadVideos();
             
-            // הפעל את YouTube
-            setTimeout(openYouTube, 2000);
+            // אם אנחנו ב-PWA, הסתר את סרגל הניווט
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                document.querySelector('.navbar').style.display = 'none';
+            }
         };
+        
+        // חסימת פרסומות - יושם בשרת הפרוקסי
     </script>
 </body>
 </html>
