@@ -1,292 +1,198 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YouTube Proxy - yewtu.be</title>
-  <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
-  <style>
-    body {
-      margin: 0; padding: 0;
-      font-family: 'Roboto', Arial, sans-serif;
-      background: #0f0f0f;
-      color: #fff;
-      direction: rtl;
-      min-height: 100vh;
-    }
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: #181818;
-      padding: 0 20px;
-      height: 60px;
-      box-shadow: 0 2px 6px #0002;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .logo img {
-      height: 36px;
-      margin-left: 4px;
-    }
-    .search-bar {
-      display: flex;
-      flex: 1;
-      max-width: 500px;
-      margin: 0 24px;
-    }
-    .search-bar input {
-      flex: 1;
-      padding: 10px 16px;
-      border: none;
-      border-radius: 24px 0 0 24px;
-      font-size: 1.1rem;
-      background: #232323;
-      color: #fff;
-      outline: none;
-    }
-    .search-bar button {
-      padding: 0 22px;
-      background: #ff0000;
-      color: #fff;
-      border: none;
-      border-radius: 0 24px 24px 0;
-      font-size: 1.2rem;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .search-bar button:hover {
-      background: #c40000;
-    }
-    .profile-icons {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .profile-icons i {
-      font-size: 1.6rem;
-      cursor: pointer;
-      color: #fff;
-      opacity: 0.9;
-      transition: color 0.2s;
-    }
-    .profile-icons i:hover {
-      color: #ff0000;
-    }
-    main {
-      display: flex;
-      width: 100%;
-      max-width: 1400px;
-      margin: 0 auto;
-      min-height: calc(100vh - 60px);
-    }
-    aside {
-      width: 220px;
-      background: #181818;
-      padding: 20px 0 0 0;
-      min-height: calc(100vh - 60px);
-      border-left: 1px solid #222;
-      display: none;
-    }
-    @media (min-width: 900px) {
-      aside { display: block; }
-    }
-    .nav-link {
-      display: flex;
-      align-items: center;
-      padding: 12px 26px;
-      color: #fff;
-      text-decoration: none;
-      font-size: 1.11rem;
-      opacity: 0.92;
-      border-radius: 8px 0 0 8px;
-      margin-bottom: 2px;
-      transition: background 0.2s, color 0.2s;
-    }
-    .nav-link.active, .nav-link:hover {
-      background: #272727;
-      color: #ff0000;
-    }
-    .nav-link i {
-      font-size: 1.5rem; margin-left: 14px;
-    }
-    .content {
-      flex: 1;
-      padding: 32px 18px 32px 18px;
-      min-width: 0;
-    }
-    .videos-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 30px 18px;
-      justify-content: flex-start;
-    }
-    .video {
-      width: 310px;
-      background: #181818;
-      border-radius: 11px;
-      box-shadow: 0 2px 10px #0003;
-      margin-bottom: 15px;
-      cursor: pointer;
-      transition: transform 0.17s;
-      display: flex;
-      flex-direction: column;
-    }
-    .video:hover { transform: scale(1.022); }
-    .thumbnail img {
-      width: 100%; height: 176px; object-fit: cover; border-radius: 10px 10px 0 0;
-      background: #222;
-      display: block;
-    }
-    .video-details {
-      display: flex;
-      align-items: flex-start;
-      padding: 14px 11px 9px 11px;
-      gap: 10px;
-    }
-    .creator-img img {
-      width: 38px; height: 38px; border-radius: 50%; background: #555;
-    }
-    .title {
-      flex: 1;
-      display: flex; flex-direction: column;
-      min-width: 0;
-      gap: 3px;
-    }
-    .video-title {
-      font-size: 1.07rem;
-      color: #fff;
-      font-weight: 500;
-      text-decoration: none;
-      margin-bottom: 2px;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      direction: rtl;
-    }
-    .video-title:hover { color: #ff0000; }
-    .video-creator {
-      color: #bbb;
-      font-size: 1.01rem;
-      margin-bottom: 1px;
-      text-decoration: none;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .video-creator:hover { color: #fff; }
-    .video-views {
-      color: #aaa;
-      font-size: 0.97rem;
-    }
-    /* Player modal */
-    #playerModal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(10,10,10,0.95);
-      z-index: 9999;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-    }
-    #playerModal.active { display: flex; }
-    #playerBox {
-      background: #111;
-      border-radius: 14px;
-      max-width: 90vw;
-      width: 800px;
-      box-shadow: 0 0 40px #000a;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 0 0 24px 0;
-    }
-    #playerBox iframe {
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      border: none;
-      border-radius: 14px 14px 0 0;
-      background: #000;
-      margin-bottom: 0;
-      display: block;
-    }
-    #playerTitle {
-      color: #fff;
-      font-size: 1.2rem;
-      font-weight: 500;
-      margin: 18px 0 5px 0;
-      padding: 0 20px;
-      text-align: right;
-    }
-    #playerChannel {
-      color: #bbb; font-size: 1.01rem; margin-bottom: 3px; text-align: right; padding: 0 20px;
-    }
-    #closePlayer {
-      color: #fff; font-size: 2.2rem; position: absolute; top: 23px; left: 44px; cursor: pointer;
-      opacity: 0.8; z-index: 10001; transition: color 0.2s;
-    }
-    #closePlayer:hover { color: #ff0000; }
-    @media (max-width: 1100px) {
-      .video { width: 46vw; min-width: 180px; }
-      #playerBox { width: 99vw; }
-    }
-    @media (max-width: 700px) {
-      aside { display: none; }
-      .content { padding: 13px 2px 28px 2px; }
-      .videos-container { gap: 19px 6px;}
-      .video { width: 97vw; }
-      #playerBox { width: 99vw; padding: 0 0 14px 0;}
-    }
-  </style>
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Premium - סימנייה</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            background: #000;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 500px;
+            width: 100%;
+        }
+        
+        .logo {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 20px;
+            background: #ff0000;
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+        }
+        
+        .logo svg {
+            width: 60px;
+            height: 60px;
+            fill: white;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+            color: #fff;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            color: #aaa;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+        
+        .button {
+            background: #ff0000;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s;
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto 20px;
+            text-decoration: none;
+        }
+        
+        .button:hover {
+            transform: scale(1.05);
+            background: #ff3333;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .feature {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+        }
+        
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .feature-text {
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+        
+        .instructions {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            text-align: right;
+        }
+        
+        .instructions h3 {
+            color: #ff5a5a;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .instructions ol {
+            padding-right: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <div class="logo">
-      <span class="material-icons" style="font-size:2rem;color:#fff;">menu</span>
-      <img src="https://www.youtube.com/s/desktop/1bfa1e55/img/favicon_144x144.png" alt="YouTube" />
-      <span style="font-weight:700;font-size:1.3rem;color:#fff;letter-spacing:1px;">YouTube Proxy</span>
+    <div class="container">
+        <div class="logo">
+            <svg viewBox="0 0 24 24">
+                <path d="M23.498 6.186a2.998 2.998 0 0 0-2.112-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.386.505A2.998 2.998 0 0 0 .502 6.186C0 8.067 0 12 0 12s0 3.933.502 5.814a2.998 2.998 0 0 0 2.112 2.136c1.881.505 9.386.505 9.386.505s7.505 0 9.386-.505a2.998 2.998 0 0 0 2.112-2.136C24 15.933 24 12 24 12s0-3.933-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+            </svg>
+        </div>
+        
+        <h1>YouTube Premium</h1>
+        <p class="subtitle">סימניית Safari עם חסימת פרסומות והרצה ברקע</p>
+        
+        <a href="https://www.youtube.com" class="button" id="launchBtn">הפעל יוטיוב</a>
+        
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">🚫</div>
+                <div class="feature-text">ללא פרסומות</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🎧</div>
+                <div class="feature-text">הרצה ברקע</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">⚡</div>
+                <div class="feature-text">מהיר ויציב</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🔒</div>
+                <div class="feature-text">פרטיות מלאה</div>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h3>הוראות שימוש:</h3>
+            <ol>
+                <li>לחץ על "הפעל יוטיוב" למעלה</li>
+                <li>בדף יוטיוב, לחץ על סמל השיתוף (חץ למעלה)</li>
+                <li>בחר "הוסף למסך הבית"</li>
+                <li>כעת תופיע אפליקציית יוטיוב במסך הבית שלך</li>
+                <li>פתח את האפליקציה והתחל לצפות ללא פרסומות!</li>
+            </ol>
+        </div>
     </div>
-    <form class="search-bar" id="searchForm" autocomplete="off">
-      <input type="text" id="searchInput" placeholder="חפש סרטון ביוטיוב..." />
-      <button type="submit"><span class="material-icons">search</span></button>
-    </form>
-    <div class="profile-icons">
-      <i class="material-icons">video_call</i>
-      <i class="material-icons">notifications</i>
-      <i class="material-icons">account_circle</i>
-    </div>
-  </header>
-  <main>
-    <aside>
-      <a href="#" class="nav-link active"><i class="material-icons">home</i>ראשי</a>
-      <a href="#" class="nav-link"><i class="material-icons">explore</i>פופולרי</a>
-      <a href="#" class="nav-link"><i class="material-icons">subscriptions</i>מנויים</a>
-      <hr style="border:none;height:1px;background:#282828;margin:16px 0;">
-      <a href="#" class="nav-link"><i class="material-icons">history</i>היסטוריה</a>
-      <a href="#" class="nav-link"><i class="material-icons">thumb_up</i>אהבתי</a>
-    </aside>
-    <div class="content">
-      <div class="videos-container" id="videosContainer"></div>
-      <div id="resultsStatus" style="margin:32px 0 0 0;text-align:center;color:#aaa;"></div>
-    </div>
-  </main>
-  <!-- Player Modal -->
-  <div id="playerModal">
-    <div id="closePlayer" title="סגור">✕</div>
-    <div id="playerBox">
-      <iframe id="playerFrame" src="" allowfullscreen allow="picture-in-picture; encrypted-media"></iframe>
-      <div id="playerTitle"></div>
-      <div id="playerChannel"></div>
-    </div>
-  </div>
-  <script src="main.js"></script>
+
+    <script>
+        // ויברציה בהקלקה
+        document.getElementById('launchBtn').addEventListener('click', function() {
+            if (navigator.vibrate) navigator.vibrate(30);
+        });
+        
+        // טריק להפעלת הרצה ברקע ב-Safari
+        function enableBackgroundPlay() {
+            if (document.pictureInPictureEnabled) {
+                const video = document.querySelector('video');
+                if (video && !document.pictureInPictureElement) {
+                    video.requestPictureInPicture();
+                }
+            }
+        }
+        
+        // הפעל אוטומטית אם כבר מותקן כ-PWA
+        if (window.navigator.standalone) {
+            window.location.href = "https://www.youtube.com";
+        }
+    </script>
 </body>
 </html>
