@@ -7,136 +7,6 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>YouTube Premium</title>
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23f00'/><path d='M70 50L40 65V35z' fill='white'/></svg>">
-    <script>
-        // ========================================
-        // ליבת טכנולוגיית חסימת הפרסומות של Brave
-        // ========================================
-        const adBlockLists = [
-            "https://easylist.to/easylist/easylist.txt",
-            "https://easylist.to/easylist/easyprivacy.txt",
-            "https://secure.fanboy.co.nz/fanboy-annoyance.txt"
-        ];
-        
-        let adBlockRules = [];
-        
-        // טעינת רשימות חסימה
-        async function loadAdBlockLists() {
-            try {
-                for (const listUrl of adBlockLists) {
-                    const response = await fetch(listUrl);
-                    const text = await response.text();
-                    const rules = text.split('\n')
-                        .filter(line => line && !line.startsWith('!'))
-                        .map(rule => {
-                            // הסרת פרמטרים מיותרים
-                            if (rule.includes('$')) return rule.split('$')[0];
-                            return rule;
-                        });
-                    adBlockRules = [...adBlockRules, ...rules];
-                }
-                console.log(`טענת ${adBlockRules.length} כללי חסימה`);
-            } catch (e) {
-                console.error("שגיאה בטעינת רשימות חסימה:", e);
-            }
-        }
-        
-        // חסימת פרסומות בזמן אמת
-        function blockAds() {
-            // חסימת אלמנטים לפי CSS
-            adBlockRules.filter(rule => rule.startsWith('##')).forEach(rule => {
-                const selector = rule.substring(2);
-                document.querySelectorAll(selector).forEach(el => el.remove());
-            });
-            
-            // חסימת תעבורה
-            const observer = new MutationObserver(mutations => {
-                mutations.forEach(mutation => {
-                    mutation.addedNodes.forEach(node => {
-                        if (node.nodeType === 1 && node.tagName === 'SCRIPT') {
-                            const src = node.src || '';
-                            if (adBlockRules.some(rule => 
-                                rule && src.includes(rule.replace('||', '').replace('^', ''))
-                            ) {
-                                node.remove();
-                                console.log("חסימת סקריפט פרסומות:", src);
-                            }
-                        }
-                    });
-                });
-            });
-            
-            observer.observe(document.documentElement, {
-                childList: true,
-                subtree: true
-            });
-        }
-        
-        // ========================================
-        // טכנולוגיית הרצה ברקע
-        // ========================================
-        function enableBackgroundPlay() {
-            // הפעלת Picture-in-Picture
-            const enablePiP = () => {
-                const videos = document.querySelectorAll('video');
-                videos.forEach(video => {
-                    if (!document.pictureInPictureElement) {
-                        video.requestPictureInPicture().catch(e => {
-                            // טריק לגרום לווידאו להמשיך לנגן ברקע
-                            video.setAttribute('playsinline', '');
-                            video.setAttribute('webkit-playsinline', '');
-                            video.play();
-                        });
-                    }
-                });
-            };
-            
-            // האזנה לשינויים בדף
-            const observer = new MutationObserver(mutations => {
-                if (document.querySelector('video')) {
-                    enablePiP();
-                    observer.disconnect();
-                }
-            });
-            
-            observer.observe(document.body, {
-                childList: true,
-                subtree: true
-            });
-            
-            // הפעלה אוטומטית כשהדף נטען
-            window.addEventListener('load', enablePiP);
-        }
-        
-        // ========================================
-        // אתחול המערכת
-        // ========================================
-        window.onload = async function() {
-            // אם אנחנו ב-PWA, פתח ישירות את יוטיוב
-            if (window.navigator.standalone) {
-                await loadAdBlockLists();
-                window.location.href = "https://www.youtube.com";
-            } else {
-                // הצג הוראות התקנה
-                document.getElementById('instructions').style.display = 'block';
-                
-                // טען רשימות חסימה
-                await loadAdBlockLists();
-                
-                // פתח את יוטיוב
-                window.location.href = "https://www.youtube.com";
-            }
-        };
-        
-        // הפעל את טכנולוגיות הליבה כשהדף נטען
-        window.addEventListener('DOMContentLoaded', () => {
-            if (window.navigator.standalone) {
-                setTimeout(() => {
-                    blockAds();
-                    enableBackgroundPlay();
-                }, 3000);
-            }
-        });
-    </script>
     <style>
         * {
             margin: 0;
@@ -155,6 +25,7 @@
             align-items: center;
             text-align: center;
             padding: 20px;
+            overflow: hidden;
         }
         
         .logo {
@@ -168,6 +39,8 @@
             justify-content: center;
             box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
             animation: pulse 2s infinite;
+            position: relative;
+            z-index: 2;
         }
         
         @keyframes pulse {
@@ -184,108 +57,99 @@
         h1 {
             font-size: 2.2rem;
             margin-bottom: 10px;
-            color: #fff;
             font-weight: 700;
             background: linear-gradient(45deg, #ff0000, #ff5a5a);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            position: relative;
+            z-index: 2;
         }
         
         .subtitle {
             color: #aaa;
             font-size: 1.1rem;
             margin-bottom: 30px;
+            position: relative;
+            z-index: 2;
         }
         
-        .instructions {
-            margin-top: 30px;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            text-align: center;
-            max-width: 500px;
+        .progress-container {
             width: 100%;
-            display: none;
-            animation: fadeIn 1s forwards;
+            max-width: 300px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 20px auto;
+            position: relative;
+            z-index: 2;
         }
         
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ff0000, #ff5a5a);
+            border-radius: 4px;
+            animation: progress 2s forwards;
         }
         
-        .instructions h3 {
-            color: #ff5a5a;
-            margin-bottom: 15px;
-            font-size: 1.4rem;
+        @keyframes progress {
+            to { width: 100%; }
         }
         
-        .instructions ol {
-            text-align: right;
-            padding-right: 20px;
-            list-style-position: inside;
-        }
-        
-        .instructions li {
-            margin-bottom: 10px;
-            line-height: 1.8;
-            font-size: 1.1rem;
-        }
-        
-        .loading {
-            margin-top: 30px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid rgba(255, 255, 255, 0.1);
-            border-top: 5px solid #ff0000;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .tech-features {
-            margin-top: 30px;
-            text-align: right;
-            max-width: 500px;
-        }
-        
-        .tech-features h3 {
-            color: #ff5a5a;
-            margin-bottom: 15px;
-            font-size: 1.3rem;
-        }
-        
-        .feature-item {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-        
-        .feature-icon {
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
-        
-        .feature-text {
+        .status {
+            color: #ccc;
             font-size: 1rem;
+            margin-top: 20px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .background-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #ff0000;
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float 8s infinite linear;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(100vh) translateX(0) scale(0.5); opacity: 0; }
+            10% { opacity: 0.5; }
+            90% { opacity: 0.2; }
+            100% { transform: translateY(-100px) translateX(100px) scale(1.5); opacity: 0; }
+        }
+        
+        @media (max-width: 480px) {
+            h1 { font-size: 1.8rem; }
+            .subtitle { font-size: 1rem; }
+            .logo {
+                width: 80px;
+                height: 80px;
+            }
+            .logo svg {
+                width: 45px;
+                height: 45px;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="background-particles" id="particles"></div>
+    
     <div class="logo">
         <svg viewBox="0 0 24 24">
             <path d="M23.498 6.186a2.998 2.998 0 0 0-2.112-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.386.505A2.998 2.998 0 0 0 .502 6.186C0 8.067 0 12 0 12s0 3.933.502 5.814a2.998 2.998 0 0 0 2.112 2.136c1.881.505 9.386.505 9.386.505s7.505 0 9.386-.505a2.998 2.998 0 0 0 2.112-2.136C24 15.933 24 12 24 12s0-3.933-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
@@ -293,51 +157,59 @@
     </div>
     
     <h1>YouTube Premium</h1>
-    <p class="subtitle">טכנולוגיות חסימת פרסומות והרצה ברקע</p>
+    <p class="subtitle">פותח את יוטיוב במצב אפליקציה...</p>
     
-    <div class="loading">
-        <div class="spinner"></div>
-        <p class="subtitle">מכין את טכנולוגיות הליבה...</p>
+    <div class="progress-container">
+        <div class="progress-bar"></div>
     </div>
     
-    <div class="tech-features">
-        <h3>טכנולוגיות מובנות:</h3>
-        <div class="feature-item">
-            <div class="feature-icon">🛡️</div>
-            <div class="feature-text">חסימת פרסומות בזמן אמת</div>
-        </div>
-        <div class="feature-item">
-            <div class="feature-icon">🎧</div>
-            <div class="feature-text">הרצת וידאו ברקע</div>
-        </div>
-        <div class="feature-item">
-            <div class="feature-icon">⚡</div>
-            <div class="feature-text">ביצועים גבוהים</div>
-        </div>
-    </div>
-    
-    <div class="instructions" id="instructions">
-        <h3>לחוויה מלאה:</h3>
-        <ol>
-            <li>פתח את יוטיוב בלחיצה על הקישור</li>
-            <li>לחץ על סמל השיתוף (חץ למעלה)</li>
-            <li>בחר "הוסף למסך הבית"</li>
-            <li>בפעם הבאה - פתח ישירות מהאפליקציה במסך הבית!</li>
-        </ol>
-    </div>
+    <div class="status" id="statusText">מתחיל טעינה</div>
 
     <script>
-        // ויברציה קלה כשהדף נטען
+        // יצירת חלקיקים רקע
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(particle);
+            }
+        }
+        
+        // פונקציה לפתיחת יוטיוב
+        function openYouTube() {
+            // אם אנחנו ב-PWA, פתח ישירות
+            if (window.navigator.standalone) {
+                window.location.href = "https://www.youtube.com";
+            } else {
+                // פתיחה בחלון חדש
+                window.open("https://www.youtube.com", "_blank");
+                
+                // הוראות להתקנה
+                setTimeout(() => {
+                    document.getElementById('statusText').innerHTML = 
+                        "להתקנת האפליקציה:<br>1. לחץ על 'Share'<br>2. בחר 'הוסף למסך הבית'";
+                }, 1500);
+            }
+        }
+        
+        // ויברציה קלה
         if (navigator.vibrate) {
             navigator.vibrate(20);
         }
         
-        // אם אנחנו לא ב-PWA, נציג הוראות התקנה אחרי זמן קצר
-        if (!window.navigator.standalone) {
+        // אתחול המערכת
+        window.onload = function() {
+            createParticles();
+            document.getElementById('statusText').textContent = "מכין את הסביבה...";
+            
             setTimeout(() => {
-                document.getElementById('instructions').style.display = 'block';
-            }, 1500);
-        }
+                document.getElementById('statusText').textContent = "פותח את YouTube...";
+                openYouTube();
+            }, 2000);
+        };
     </script>
 </body>
 </html>
