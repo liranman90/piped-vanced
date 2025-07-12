@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Premium</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23f00'/><path d='M70 50L40 65V35z' fill='white'/></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(255, 0, 0, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(255, 0, 0, 0.1) 0%, transparent 20%);
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 500px;
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+            z-index: 1;
+        }
+        
+        .logo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            background: #ff0000;
+            border-radius: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 40px rgba(255, 0, 0, 0.6);
+            position: relative;
+            overflow: hidden;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 40px rgba(255, 0, 0, 0.6); }
+            50% { transform: scale(1.05); box-shadow: 0 0 60px rgba(255, 0, 0, 0.8); }
+        }
+        
+        .logo::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shine 3s infinite linear;
+        }
+        
+        @keyframes shine {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .logo svg {
+            width: 70px;
+            height: 70px;
+            fill: white;
+            z-index: 1;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #ff0000, #ff5a5a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            text-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
+        }
+        
+        .subtitle {
+            color: #ccc;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .feature {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .feature-text {
+            font-size: 1rem;
+        }
+        
+        .launch-btn {
+            background: linear-gradient(45deg, #ff0000, #ff5a5a);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 50px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(255, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+        
+        .launch-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: 0.5s;
+        }
+        
+        .launch-btn:hover::after {
+            left: 100%;
+        }
+        
+        .status {
+            margin-top: 20px;
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+        
+        .proxy-info {
+            margin-top: 30px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+        
+        .instructions {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .instructions h3 {
+            color: #ff5a5a;
+            margin-bottom: 15px;
+        }
+        
+        .instructions ol {
+            text-align: right;
+            padding-right: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .logo {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .logo svg {
+                width: 50px;
+                height: 50px;
+            }
+            
+            h1 {
+                font-size: 2.3rem;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-pattern"></div>
+    
+    <div class="container">
+        <div class="logo">
+            <svg viewBox="0 0 24 24">
+                <path d="M23.498 6.186a2.998 2.998 0 0 0-2.112-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.386.505A2.998 2.998 0 0 0 .502 6.186C0 8.067 0 12 0 12s0 3.933.502 5.814a2.998 2.998 0 0 0 2.112 2.136c1.881.505 9.386.505 9.386.505s7.505 0 9.386-.505a2.998 2.998 0 0 0 2.112-2.136C24 15.933 24 12 24 12s0-3.933-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+            </svg>
+        </div>
+        
+        <h1>YouTube Premium</h1>
+        <p class="subtitle">ללא פרסומות • הרצה ברקע • נגן מלא</p>
+        
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">🚫</div>
+                <div class="feature-text">ללא פרסומות</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🎧</div>
+                <div class="feature-text">הרצה ברקע</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">⚡</div>
+                <div class="feature-text">מהיר ויציב</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📱</div>
+                <div class="feature-text">נראה כמו אפליקציה</div>
+            </div>
+        </div>
+        
+        <button class="launch-btn" id="launchBtn">
+            הפעל עכשיו
+        </button>
+        
+        <div class="status" id="statusText">מוכן לפעולה</div>
+        
+        <div class="proxy-info">
+            שרת פרוקסי פעיל: <span id="proxyName">yewtu.be</span>
+        </div>
+        
+        <div class="instructions" id="instructions">
+            <h3>הוראות התקנה:</h3>
+            <ol>
+                <li>לחץ על "הפעל עכשיו" למעלה</li>
+                <li>לאחר פתיחת יוטיוב, לחץ על כפתור השיתוף (חץ למעלה)</li>
+                <li>בחר "הוסף למסך הבית"</li>
+                <li>כעת תופיע אפליקציית יוטיוב במסך הבית שלך</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        // רשימת שרתי פרוקסי פעילים ונבדקים ליולי 2025
+        const WORKING_PROXIES = [
+            { name: "yewtu.be", url: "https://yewtu.be" },
+            { name: "invidious.snopyta.org", url: "https://invidious.snopyta.org" },
+            { name: "vid.puffyan.us", url: "https://vid.puffyan.us" },
+            { name: "inv.riverside.rocks", url: "https://inv.riverside.rocks" }
+        ];
+        
+        let currentProxy = 0;
+        const statusEl = document.getElementById('statusText');
+        const proxyNameEl = document.getElementById('proxyName');
+        const launchBtn = document.getElementById('launchBtn');
+        const instructions = document.getElementById('instructions');
+        
+        // בדיקת זמינות השרת
+        async function checkProxyAvailability(proxyUrl) {
+            try {
+                // בדיקה מהירה ללא טעינת תוכן מלא
+                const response = await fetch(`${proxyUrl}/`, {
+                    method: 'HEAD',
+                    mode: 'no-cors',
+                    cache: 'no-store'
+                });
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+        
+        // מציאת שרת זמין
+        async function findWorkingProxy() {
+            for (let i = 0; i < WORKING_PROXIES.length; i++) {
+                statusEl.textContent = `בודק שרת: ${WORKING_PROXIES[i].name}...`;
+                const isAvailable = await checkProxyAvailability(WORKING_PROXIES[i].url);
+                
+                if (isAvailable) {
+                    statusEl.textContent = `מחובר לשרת: ${WORKING_PROXIES[i].name}`;
+                    proxyNameEl.textContent = WORKING_PROXIES[i].name;
+                    return WORKING_PROXIES[i];
+                }
+            }
+            
+            statusEl.textContent = "אף שרת לא זמין. נסה שוב מאוחר יותר.";
+            return null;
+        }
+        
+        // הפעלת הנגן
+        async function launchPlayer() {
+            launchBtn.disabled = true;
+            statusEl.textContent = "מתחיל...";
+            
+            const proxy = await findWorkingProxy();
+            
+            if (!proxy) {
+                statusEl.textContent = "שגיאה: לא נמצא שרת זמין";
+                launchBtn.disabled = false;
+                return;
+            }
+            
+            statusEl.textContent = `פותח ${proxy.name}...`;
+            
+            // אם אנחנו ב-PWA, פתח ישירות
+            if (window.navigator.standalone) {
+                window.location.href = `${proxy.url}/`;
+            } else {
+                // פתיחה בחלון חדש
+                window.open(`${proxy.url}/`, '_blank');
+                
+                // הצגת הוראות להתקנה
+                instructions.style.display = 'block';
+                statusEl.innerHTML = "להתקנת האפליקציה:<br>1. לחץ על 'Share'<br>2. בחר 'הוסף למסך הבית'";
+            }
+        }
+        
+        // בדיקה אוטומטית בהתחלה
+        window.addEventListener('load', async () => {
+            await findWorkingProxy();
+            
+            // אם אנחנו ב-PWA, הפעל אוטומטית
+            if (window.navigator.standalone) {
+                setTimeout(launchPlayer, 1000);
+            }
+        });
+        
+        // כפתור הפעלה
+        launchBtn.addEventListener('click', launchPlayer);
+        
+        // ויברציה בהקלקה
+        launchBtn.addEventListener('touchstart', () => {
+            if (navigator.vibrate) navigator.vibrate(30);
+        });
+    </script>
+</body>
+</html>
