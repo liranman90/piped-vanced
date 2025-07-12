@@ -2,41 +2,43 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="YouTube">
-    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIllvdVR1YmUiLAogICJzaG9ydF9uYW1lIjogIllvdVR1YmUiLAogICJzdGFydF91cmwiOiAiLz9wPXl0IiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMDAwMDAwIiwKICAidGhlbWVfY29sb3IiOiAiI2ZmMDAwMCIKfQ==">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>YouTube Full</title>
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23f00'/><path d='M70 50L40 65V35z' fill='white'/></svg>">
-    <title>YouTube Premium</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
         }
         
-        body {
+        body, html {
+            height: 100%;
+            overflow: hidden;
             background: #000;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             color: white;
-            min-height: 100vh;
+        }
+        
+        #container {
+            height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
             padding: 20px;
-            padding-top: env(safe-area-inset-top);
-            padding-bottom: env(safe-area-inset-bottom);
-            overflow: hidden;
+            position: relative;
         }
         
         .logo {
             width: 100px;
             height: 100px;
-            margin: 0 auto 20px;
+            margin-bottom: 20px;
             background: #ff0000;
             border-radius: 22px;
             display: flex;
@@ -48,7 +50,7 @@
         
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); box-shadow: 0 0 40px rgba(255, 0, 0, 0.7); }
+            50% { transform: scale(1.05); }
         }
         
         .logo svg {
@@ -101,81 +103,115 @@
             margin-top: 20px;
         }
         
+        .hidden {
+            display: none;
+        }
+        
+        /* הסתרת כל אלמנטי הדפדפן במצב PWA */
         @media (display-mode: standalone) {
             body {
                 padding-top: env(safe-area-inset-top);
                 padding-bottom: env(safe-area-inset-bottom);
             }
-        }
-        
-        /* הסתרת סרגלי הניווט בדפדפן במצב PWA */
-        @media (display-mode: standalone) {
-            body:after {
+            
+            #container {
+                padding-top: env(safe-area-inset-top);
+                padding-bottom: env(safe-area-inset-bottom);
+            }
+            
+            body::after {
                 content: "";
+                display: block;
                 position: fixed;
                 top: 0;
                 left: 0;
                 right: 0;
                 height: env(safe-area-inset-top);
                 background: #000;
-                z-index: 9999;
-            }
-        }
-        
-        /* הסתרת שורת הכתובת במצב PWA */
-        @media (display-mode: standalone) {
-            body {
-                -webkit-user-select: none;
-                -webkit-touch-callout: none;
+                z-index: 1000;
             }
         }
     </style>
 </head>
 <body>
-    <div class="logo">
-        <svg viewBox="0 0 24 24">
-            <path d="M23.498 6.186a2.998 2.998 0 0 0-2.112-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.386.505A2.998 2.998 0 0 0 .502 6.186C0 8.067 0 12 0 12s0 3.933.502 5.814a2.998 2.998 0 0 0 2.112 2.136c1.881.505 9.386.505 9.386.505s7.505 0 9.386-.505a2.998 2.998 0 0 0 2.112-2.136C24 15.933 24 12 24 12s0-3.933-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-        </svg>
+    <div id="container">
+        <div class="logo">
+            <svg viewBox="0 0 24 24">
+                <path d="M23.498 6.186a2.998 2.998 0 0 0-2.112-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.386.505A2.998 2.998 0 0 0 .502 6.186C0 8.067 0 12 0 12s0 3.933.502 5.814a2.998 2.998 0 0 0 2.112 2.136c1.881.505 9.386.505 9.386.505s7.505 0 9.386-.505a2.998 2.998 0 0 0 2.112-2.136C24 15.933 24 12 24 12s0-3.933-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+            </svg>
+        </div>
+        
+        <h1>YouTube Full</h1>
+        <p class="subtitle">פתיחת מסך מלא ללא סרגלים</p>
+        
+        <div class="progress-container">
+            <div class="progress-bar"></div>
+        </div>
+        
+        <div class="status" id="statusText">מתחיל טעינה...</div>
     </div>
-    
-    <h1>YouTube Premium</h1>
-    <p class="subtitle">פתיחת אפליקציה מלאה</p>
-    
-    <div class="progress-container">
-        <div class="progress-bar"></div>
-    </div>
-    
-    <div class="status" id="statusText">פותח את יוטיוב...</div>
 
     <script>
-        // פונקציה לפתיחת יוטיוב במצב PWA מלא
-        function openYouTube() {
+        // פונקציה לפתיחת יוטיוב במסך מלא
+        function openYouTubeFullScreen() {
+            // אם אנחנו במצב PWA, פתח ישירות
             if (window.matchMedia('(display-mode: standalone)').matches) {
-                // אם אנחנו במצב PWA, פתח ישירות
                 window.location.href = "https://www.youtube.com";
             } else {
-                // פתיחה בחלון חדש
-                window.open("https://www.youtube.com", "_blank");
+                // פתיחה בחלון חדש עם מניפולציית DOM
+                const newWindow = window.open("", "_blank");
                 
-                // הוראות להתקנה
-                setTimeout(() => {
-                    document.getElementById('statusText').innerHTML = 
-                        "להתקנת אפליקציה מלאה:<br>1. לחץ על 'Share'<br>2. בחר 'הוסף למסך הבית'";
-                }, 1500);
+                // יצירת דף חדש ללא סרגלים
+                newWindow.document.write(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <meta name="apple-mobile-web-app-capable" content="yes">
+                        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+                        <title>YouTube Full</title>
+                        <style>
+                            body, html {
+                                margin: 0;
+                                padding: 0;
+                                height: 100%;
+                                overflow: hidden;
+                                background: #000;
+                            }
+                            iframe {
+                                position: fixed;
+                                top: 0;
+                                left: 0;
+                                width: 100%;
+                                height: 100%;
+                                border: none;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <iframe src="https://www.youtube.com" allowfullscreen></iframe>
+                    </body>
+                    </html>
+                `);
+                
+                newWindow.document.close();
             }
-        }
-        
-        // ויברציה קלה
-        if (navigator.vibrate) {
-            navigator.vibrate(20);
         }
         
         // אתחול המערכת
         window.onload = function() {
-            document.getElementById('statusText').textContent = "מכין את האפליקציה...";
+            document.getElementById('statusText').textContent = "מכין מסך מלא...";
             
             setTimeout(() => {
-                openYouTube();
+                document.getElementById('statusText').textContent = "פותח יוטיוב...";
+                openYouTubeFullScreen();
+                
+                // הוראות להתקנה אם לא במצב PWA
+                if (!window.matchMedia('(display-mode: standalone)').matches) {
+                    setTimeout(() => {
+                        document.getElementById('statusText').innerHTML = 
+                            "להתקנה קבועה:<br>1. פתח את יוטיוב<br>2. לחץ על Share<br>3. בחר 'הוסף למסך הבית'";
+                    }, 2000);
+                }
             }, 2000);
         };
     </script>
